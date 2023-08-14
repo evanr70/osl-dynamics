@@ -25,7 +25,7 @@ models = {
 }
 
 
-def load(dirname):
+def load(dirname, no_weights=False):
     """Load model from dirname.
 
     Parameters
@@ -55,4 +55,4 @@ def load(dirname):
             + f"Options are {', '.join(models.keys())}"
         )
 
-    return model_type.load(dirname)
+    return model_type.load(dirname, no_weights=no_weights)

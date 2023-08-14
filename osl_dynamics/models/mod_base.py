@@ -569,7 +569,7 @@ class ModelBase:
         return config_dict, version
 
     @classmethod
-    def load(cls, dirname):
+    def load(cls, dirname, no_weights=False):
         """Load model from :code:`dirname`.
 
         Parameters
@@ -602,6 +602,7 @@ class ModelBase:
         model.osld_version = version
 
         # Restore weights
-        model.load_weights(f"{dirname}/weights").expect_partial()
+        if not no_weights:
+            model.load_weights(f"{dirname}/weights").expect_partial()
 
         return model

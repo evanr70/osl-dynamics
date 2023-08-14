@@ -15,8 +15,8 @@ See Also
   /dynemo_soft_mix_simulation.html>`_.
 """
 
-import os
 import logging
+import os
 from dataclasses import dataclass
 
 import numpy as np
@@ -25,6 +25,7 @@ from tensorflow.keras import layers
 from tqdm.auto import trange
 
 from osl_dynamics.inference.layers import (
+    CorrelationMatricesLayer,
     CovarianceMatricesLayer,
     DiagonalMatricesLayer,
     InferenceRNNLayer,
@@ -37,8 +38,8 @@ from osl_dynamics.inference.layers import (
     NormalizationLayer,
     SampleNormalDistributionLayer,
     SoftmaxLayer,
-    VectorsLayer,
     StaticLossScalingFactorLayer,
+    VectorsLayer,
 )
 from osl_dynamics.models import obs_mod
 from osl_dynamics.models.inf_mod_base import (
@@ -686,11 +687,12 @@ def _model_structure(config):
             name="covs",
         )
     else:
-        covs_layer = CovarianceMatricesLayer(
+        covs_layer = CorrelationMatricesLayer(
             config.n_modes,
             config.n_channels,
             config.learn_covariances,
-            config.initial_covariances,
+            # config.initial_covariances,
+            None,
             config.covariances_epsilon,
             config.covariances_regularizer,
             name="covs",
