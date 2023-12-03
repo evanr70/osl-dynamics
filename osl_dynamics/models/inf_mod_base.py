@@ -5,6 +5,7 @@
 import logging
 from dataclasses import dataclass
 from typing import Literal
+from tqdm.auto import tqdm
 
 import numpy as np
 import tensorflow as tf
@@ -512,7 +513,7 @@ class VariationalInferenceModelBase(ModelBase):
         return mean_theta, fc_theta
 
     def get_alpha(
-        self, dataset, concatenate=False, remove_edge_effects=False, **kwargs
+        self, dataset, concatenate=False, remove_edge_effects=True, **kwargs
     ):
         """Get mode mixing coefficients, :code:`alpha`.
 
@@ -553,8 +554,8 @@ class VariationalInferenceModelBase(ModelBase):
 
         _logger.info("Getting alpha")
         alpha = []
-        for ds in dataset:
-            predictions = self.predict(ds, **kwargs)
+        for ds in tqdm(dataset):
+            predictions = self.predict(ds, verbose=0, **kwargs)
             theta = predictions["theta"]
             alpha_ = alpha_layer(theta)
             if remove_edge_effects:

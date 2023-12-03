@@ -285,8 +285,8 @@ def train_dynemo(
     model = dynemo.Model(config)
     model.summary()
 
-    # Set regularisers
-    model.set_regularizers(data)
+    # # Set regularisers
+    # model.set_regularizers(data)
 
     # Initialisation
     default_init_kwargs = {"n_init": 5, "n_epochs": 2, "take": 1}

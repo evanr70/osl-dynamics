@@ -1,0 +1,7 @@
+{
+    "python.formatting.provider": "black",
+    "python.analysis.typeCheckingMode": "off",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": false,
+    "python.analysis.autoImportCompletions": true
+}

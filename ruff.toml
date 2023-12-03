@@ -1,0 +1,2 @@
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B"]

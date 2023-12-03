@@ -282,6 +282,7 @@ def save(
     mean_weights=None,
     asymmetric_data=False,
     plot_kwargs=None,
+    plot_img_on_surf=plotting.plot_img_on_surf,
 ):
     """Saves power maps.
 
@@ -433,7 +434,7 @@ def save(
         figures, axes = [], []
         for i in trange(n_modes, desc="Saving images"):
             nii = nib.Nifti1Image(power_map[:, :, :, i], mask.affine, mask.header)
-            fig, ax = plotting.plot_img_on_surf(nii, output_file=None, **plot_kwargs)
+            fig, ax = plot_img_on_surf(nii, output_file=None, **plot_kwargs)
             figures.append(fig)
             axes.append(ax)
             if asymmetric_data:
@@ -464,7 +465,7 @@ def save(
                     mask.affine,
                     mask.header,
                 )
-                fig, ax = plotting.plot_img_on_surf(
+                fig, ax = plot_img_on_surf(
                     nii, output_file=None, **plot_kwargs
                 )
                 if asymmetric_data:
