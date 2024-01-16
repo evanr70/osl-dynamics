@@ -15,6 +15,7 @@ This module is used in the following tutorials:
 """
 
 from pathlib import Path
+from functools import partial
 
 import numpy as np
 from nilearn import plotting
@@ -801,7 +802,8 @@ def save(
 
     # Loop through each connectivity map
     n_modes = conn_map.shape[0]
-    for i in trange(n_modes, desc="Saving images"):
+    range_ = range if n_modes == 1 else partial(trange, desc="Saving images")
+    for i in range_(n_modes):
         # Overwrite keyword arguments if passed
         kwargs = override_dict_defaults(default_plot_kwargs, plot_kwargs)
 
@@ -836,8 +838,8 @@ def save(
 
         else:
             # If all connections are zero don't add a colourbar
-            kwargs["colorbar"] = np.any(
-                conn_map[i][~np.eye(conn_map[i].shape[-1], dtype=bool)] != 0
+            kwargs["colorbar"] = kwargs["colorbar"] and np.any(
+                conn_map[i][~np.eye(conn_map[i].shape[-1], dtype=bool)] != 0,
             )
 
             # Plot maps
@@ -848,6 +850,7 @@ def save(
                 output_file=output_file,
                 **kwargs,
             )
+    return None
 
 
 def spectral_reordering(corr_mat):

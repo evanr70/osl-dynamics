@@ -1663,6 +1663,7 @@ def plot_alpha(
     fig_kwargs=None,
     filename=None,
     axes=None,
+    cbar=True,
 ):
     """Plot alpha.
 
@@ -1690,6 +1691,8 @@ def plot_alpha(
     axes : list of plt.axes, optional
         A list of matplotlib axes to plot on. If :code:`None`, a new
         figure is created.
+    cbar : bool, optional
+        Should we show a colorbar?
 
     Returns
     -------
@@ -1774,15 +1777,16 @@ def plot_alpha(
     # Fix layout
     plt.tight_layout()
 
-    # Add a colour bar
-    norm = matplotlib.colors.BoundaryNorm(
-        boundaries=range(n_modes + 1), ncolors=n_modes
-    )
-    mappable = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
-    fig.subplots_adjust(right=0.94)
-    cb_ax = fig.add_axes([0.95, 0.15, 0.025, 0.7])
-    cb = fig.colorbar(mappable, cax=cb_ax, ticks=np.arange(0.5, n_modes, 1))
-    cb.ax.set_yticklabels(range(1, n_modes + 1))
+    if cbar:
+        # Add a colour bar
+        norm = matplotlib.colors.BoundaryNorm(
+            boundaries=range(n_modes + 1), ncolors=n_modes
+        )
+        mappable = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
+        fig.subplots_adjust(right=0.94)
+        cb_ax = fig.add_axes([0.95, 0.15, 0.025, 0.7])
+        cb = fig.colorbar(mappable, cax=cb_ax, ticks=np.arange(0.5, n_modes, 1))
+        cb.ax.set_yticklabels(range(1, n_modes + 1))
 
     # Save to file if a filename as been passed
     if filename is not None:

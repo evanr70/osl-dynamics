@@ -57,8 +57,19 @@ class MixedSine:
         self.sampling_frequency = sampling_frequency
         self._rng = np.random.default_rng(random_seed)
 
-    def generate_modes(self, n_samples):
-        # Simulate a random initial phase for each sinusoid
+    def generate_logits(self, n_samples):
+        """Generate the logits for each mode time course.
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of samples to draw from the model.
+
+        Returns
+        -------
+        logits : np.ndarray
+            Logits for each mode time course. Shape is (n_samples, n_modes).
+        """
         self.phases = self._rng.uniform(0, 2 * np.pi, self.n_modes)
 
         # Generator mode time courses
@@ -73,6 +84,11 @@ class MixedSine:
                 i
             ] * np.sin(2 * np.pi * self.frequencies[i] * t + self.phases[i])
 
+        return self.logits
+
+    def generate_modes(self, n_samples):
+        # Simulate a random initial phase for each sinusoid
+        self.logits = self.generate_logits(n_samples)
         # Ensure mode time courses sum to one at each time point
         modes = softmax(self.logits, axis=1)
 

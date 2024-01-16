@@ -181,6 +181,7 @@ class Config(BaseModelConfig, VariationalInferenceModelConfig):
     initial_means: np.ndarray = None
     initial_covariances: np.ndarray = None
     diagonal_covariances: bool = False
+    cov_override: bool = False
     covariances_epsilon: float = None
     means_regularizer: tf.keras.regularizers.Regularizer = None
     covariances_regularizer: tf.keras.regularizers.Regularizer = None
@@ -678,6 +679,16 @@ def _model_structure(config):
     )
     if config.diagonal_covariances:
         covs_layer = DiagonalMatricesLayer(
+            config.n_modes,
+            config.n_channels,
+            config.learn_covariances,
+            config.initial_covariances,
+            config.covariances_epsilon,
+            config.covariances_regularizer,
+            name="covs",
+        )
+    elif config.cov_override:
+        covs_layer = CovarianceMatricesLayer(
             config.n_modes,
             config.n_channels,
             config.learn_covariances,
