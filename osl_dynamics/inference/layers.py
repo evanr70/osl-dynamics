@@ -628,6 +628,74 @@ class CovarianceMatricesLayer(layers.Layer):
         return covariances
 
 
+class DampedOscillatorMatricesLayer(layers.Layer):
+    def __init__(
+        self,
+        n_embeddings: int,
+        sampling_frequency: float,
+        n_modes: int,
+        learn: bool,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.n_embeddings = n_embeddings
+        self.sampling_frequency = sampling_frequency
+
+        self.x = (
+            tf.expand_dims(tf.range(0, n_embeddings, dtype=tf.float32), axis=0)
+            / sampling_frequency
+        )
+
+        self.damping = LearnableTensorLayer(
+            shape=(n_modes, 1),
+            learn=learn,
+            initializer=None,
+            initial_value=0.5 * tf.ones((n_modes, 1)),
+            name=self.name + "_damping",
+        )
+
+        self.frequency = LearnableTensorLayer(
+            shape=(n_modes, 1),
+            learn=learn,
+            initializer=None,
+            # initial_value=2 * np.pi * tf.ones((n_modes, 1)),
+            initial_value=tf.random.uniform((n_modes, 1), minval=1, maxval=45),
+            name=self.name + "_frequency",
+        )
+
+        self.amplitude = LearnableTensorLayer(
+            shape=(n_modes, 1),
+            learn=learn,
+            initializer=None,
+            initial_value=tf.ones((n_modes, 1)),
+            name=self.name + "_amplitude",
+        )
+
+    def call(self, inputs, **kwargs):
+        damping = self.damping(inputs, **kwargs)
+        damping = tf.clip_by_value(damping, 0, 20)
+        frequency = self.frequency(inputs, **kwargs)
+        frequency = tf.clip_by_value(frequency, 1, 45)
+        omega = 2 * np.pi * frequency
+        amplitude = self.amplitude(inputs, **kwargs)
+        # amplitude = 1.0
+
+        # Calculate the damped oscillator
+        oscillator = (
+            amplitude
+            * tf.exp(-damping * self.x)
+            * tf.cos(
+                omega * self.x,
+            )
+        )
+
+        # Make Toeplitz matrix
+        return tf.linalg.LinearOperatorToeplitz(
+            row=oscillator,
+            col=oscillator,
+        ).to_dense()
+
+
 class CorrelationMatricesLayer(layers.Layer):
     """Layer to learn a set of correlation matrices.
 

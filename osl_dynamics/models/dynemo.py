@@ -40,6 +40,7 @@ from osl_dynamics.inference.layers import (
     SoftmaxLayer,
     StaticLossScalingFactorLayer,
     VectorsLayer,
+    DampedOscillatorMatricesLayer,
 )
 from osl_dynamics.models import obs_mod
 from osl_dynamics.models.inf_mod_base import (
@@ -698,14 +699,11 @@ def _model_structure(config):
             name="covs",
         )
     else:
-        covs_layer = CorrelationMatricesLayer(
-            config.n_modes,
-            config.n_channels,
-            config.learn_covariances,
-            # config.initial_covariances,
-            None,
-            config.covariances_epsilon,
-            config.covariances_regularizer,
+        covs_layer = DampedOscillatorMatricesLayer(
+            n_embeddings=config.n_channels,
+            sampling_frequency=100.0,
+            n_modes=config.n_modes,
+            learn=config.learn_covariances,
             name="covs",
         )
     mix_means_layer = MixVectorsLayer(name="mix_means")
