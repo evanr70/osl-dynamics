@@ -115,59 +115,16 @@ def sliding_window_view(
 ):
     """Create a sliding window over an array in arbitrary dimensions.
 
-    Unceremoniously ripped from numpy 1.20,
-    `np.lib.stride_tricks.sliding_window_view \
-    <https://numpy.org/doc/1.20/reference/generated/\
-    numpy.lib.stride_tricks.sliding_window_view.html>`_.
+    Use np.lib.stride_tricks.sliding_window_view instead.
     """
-    if np.iterable(window_shape):
-        window_shape = tuple(window_shape)
-    else:
-        window_shape = (window_shape,)
-
-    # First convert input to array, possibly keeping subclass
-    x = np.array(x, copy=False, subok=subok)
-
-    window_shape_array = np.array(window_shape)
-    if np.any(window_shape_array < 0):
-        raise ValueError("`window_shape` cannot contain negative values")
-
-    if axis is None:
-        axis = tuple(range(x.ndim))
-        if len(window_shape) != len(axis):
-            raise ValueError(
-                f"Since axis is `None`, must provide "
-                f"window_shape for all dimensions of `x`; "
-                f"got {len(window_shape)} window_shape elements "
-                f"and `x.ndim` is {x.ndim}."
-            )
-    else:
-        axis = np.core.numeric.normalize_axis_tuple(
-            axis,
-            x.ndim,
-            allow_duplicate=True,
-        )
-        if len(window_shape) != len(axis):
-            raise ValueError(
-                f"Must provide matching length window_shape and "
-                f"axis; got {len(window_shape)} window_shape "
-                f"elements and {len(axis)} axes elements."
-            )
-
-    out_strides = x.strides + tuple(x.strides[ax] for ax in axis)
-
-    # note: same axis can be windowed repeatedly
-    x_shape_trimmed = list(x.shape)
-    for ax, dim in zip(axis, window_shape):
-        if x_shape_trimmed[ax] < dim:
-            msg = "window shape cannot be larger than input array shape"
-            raise ValueError(msg)
-        x_shape_trimmed[ax] -= dim - 1
-    out_shape = tuple(x_shape_trimmed) + window_shape
-    return np.lib.stride_tricks.as_strided(
+    _logger.warning(
+        "This function has been copied from numpy."
+        "Use np.lib.stride_tricks.sliding_window_view instead.",
+    )
+    return np.lib.stride_tricks.sliding_window_view(
         x,
-        strides=out_strides,
-        shape=out_shape,
+        window_shape,
+        axis=axis,
         subok=subok,
         writeable=writeable,
     )
