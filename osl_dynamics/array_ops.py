@@ -3,7 +3,11 @@
 
 """
 
+import logging
+
 import numpy as np
+
+_logger = logging.getLogger("osl-dynamics")
 
 
 def get_one_hot(values, n_states=None):
@@ -203,29 +207,9 @@ def ezclump(binary_array):
     """Find the clumps (groups of data with the same values) for a 1D bool
     array.
 
-    Taken wholesale from :code:`numpy.ma.extras.ezclump`.
+    Invisible wrapper of :code:`numpy.ma.extras.ezclump`.
     """
-    if binary_array.ndim > 1:
-        binary_array = binary_array.ravel()
-    idx = (binary_array[1:] ^ binary_array[:-1]).nonzero()
-    idx = idx[0] + 1
-
-    if binary_array[0]:
-        if len(idx) == 0:
-            return [slice(0, binary_array.size)]
-
-        r = [slice(0, idx[0])]
-        r.extend((slice(left, right) for left, right in zip(idx[1:-1:2], idx[2::2])))
-    else:
-        if len(idx) == 0:
-            return []
-
-        r = [slice(left, right) for left, right in zip(idx[:-1:2], idx[1::2])]
-
-    if binary_array[-1]:
-        r.append(slice(idx[-1], binary_array.size))
-
-    return r
+    return np.ma.extras.ezclump(binary_array)
 
 
 def slice_length(slice_):
